@@ -1,0 +1,47 @@
+# ==========================================
+# 📁 SkillSphere Java Swing Project
+# ==========================================
+
+# 🧠 OS generated files
+.DS_Store
+Thumbs.db
+
+# 🧰 IDE specific
+.vscode/
+.idea/
+*.iml
+
+# 🧱 Java build / class files
+*.class
+*.jar
+*.war
+*.ear
+
+# ⚙️ Build directories
+/bin/
+/build/
+/out/
+/target/
+
+# 🧾 Logs and temp
+*.log
+*.tmp
+*.bak
+
+# 🔐 Credentials or local configs
+*.env
+*.properties
+config/
+
+# 📦 Libraries (optional if you include jars manually)
+# Uncomment below if you *don’t* want to push JARs
+# /lib/
+
+# 🗃️ Database dumps or temp SQLs
+*.sql~
+*.sql.bak
+
+# 🚫 OS trash
+*.swp
+*.swo
+~$*
