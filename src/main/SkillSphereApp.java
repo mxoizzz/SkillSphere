@@ -1,23 +1,40 @@
 package main;
 
+import javax.swing.SwingUtilities;
+import ui.auth.LoginForm;
+import utils.DBConnection;
 import java.sql.Connection;
 
-import utils.DBConnection;
-
 public class SkillSphereApp {
+
     public static void main(String[] args) {
-        System.out.println("Starting SkillSphere Application!");
+        System.out.println("Starting SkillSphere Application...");
 
-        Connection con = DBConnection.getConnection();
-
-        if (con != null) {
-            System.out.println("Application is connected to the database.");
+        // Test database connection
+        try (Connection con = DBConnection.getConnection()) {
+            if (con != null) {
+                System.out.println("Connected to the database successfully.");
+            } else {
+                System.out.println("Failed to connect to the database.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else {
-            System.out.println("Failed to connect to the database.");
-        }
 
-        DBConnection.closeConnection();
-        System.out.println("SkillSphere Application Ended.");
+        // Launch GUI on Event Dispatch Thread
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Set system look and feel
+                javax.swing.UIManager.setLookAndFeel(
+                    javax.swing.UIManager.getSystemLookAndFeelClassName()
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Open Login Form
+            LoginForm loginForm = new LoginForm();
+            loginForm.setVisible(true);
+        });
     }
 }
