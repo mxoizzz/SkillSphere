@@ -1,9 +1,8 @@
 package ui.auth;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import java.awt.*;
+import java.awt.event.*;
 import model.User;
 import service.UserService;
 
@@ -12,71 +11,154 @@ public class RegisterForm extends JFrame {
     private JTextField nameField, emailField;
     private JPasswordField passwordField;
     private JComboBox<String> roleBox;
-    private JButton registerButton, loginButton;
-
-    private UserService userService;
+    private final UserService userService = new UserService();
 
     public RegisterForm() {
-        userService = new UserService();
-
         setTitle("SkillSphere | Register");
-        setSize(400, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(500, 600);
         setLocationRelativeTo(null);
-        setLayout(null);
+        setResizable(false);
 
-        JLabel nameLabel = new JLabel("Name:");
-        nameLabel.setBounds(50, 50, 100, 25);
-        add(nameLabel);
+        // ==== Background ====
+        JPanel background = new JPanel(new GridBagLayout());
+        background.setBackground(new Color(25, 25, 25));
+        add(background);
 
-        nameField = new JTextField();
-        nameField.setBounds(150, 50, 180, 25);
-        add(nameField);
+        // ==== Card ====
+        JPanel card = new JPanel();
+        card.setBackground(new Color(40, 40, 40));
+        card.setPreferredSize(new Dimension(380, 500));
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        JLabel emailLabel = new JLabel("Email:");
-        emailLabel.setBounds(50, 100, 100, 25);
-        add(emailLabel);
+        // ==== Title ====
+        JLabel title = new JLabel("Create Your Account", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        title.setForeground(Color.WHITE);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        card.add(title);
+        card.add(Box.createVerticalStrut(25));
 
-        emailField = new JTextField();
-        emailField.setBounds(150, 100, 180, 25);
-        add(emailField);
+        // ==== Name ====
+        JLabel nameLabel = createLabel("Name");
+        card.add(wrapLeftAligned(nameLabel));
+        nameField = createTextField();
+        card.add(nameField);
+        card.add(Box.createVerticalStrut(20));
 
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setBounds(50, 150, 100, 25);
-        add(passwordLabel);
+        // ==== Email ====
+        JLabel emailLabel = createLabel("Email");
+        card.add(wrapLeftAligned(emailLabel));
+        emailField = createTextField();
+        card.add(emailField);
+        card.add(Box.createVerticalStrut(20));
 
+        // ==== Password ====
+        JLabel passwordLabel = createLabel("Password");
+        card.add(wrapLeftAligned(passwordLabel));
         passwordField = new JPasswordField();
-        passwordField.setBounds(150, 150, 180, 25);
-        add(passwordField);
+        styleField(passwordField);
+        card.add(passwordField);
+        card.add(Box.createVerticalStrut(20));
 
-        JLabel roleLabel = new JLabel("Role:");
-        roleLabel.setBounds(50, 200, 100, 25);
-        add(roleLabel);
-
+        // ==== Role ====
+        JLabel roleLabel = createLabel("Role");
+        card.add(wrapLeftAligned(roleLabel));
         roleBox = new JComboBox<>(new String[]{"Learner", "Mentor", "Employer"});
-        roleBox.setBounds(150, 200, 180, 25);
-        add(roleBox);
+        styleComboBox(roleBox);
+        card.add(roleBox);
+        card.add(Box.createVerticalStrut(30));
 
-        registerButton = new JButton("Register");
-        registerButton.setBounds(50, 270, 130, 30);
-        add(registerButton);
+        // ==== Register Button ====
+        JButton registerButton = createButton("Register", new Color(46, 204, 113));
+        registerButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        registerButton.addActionListener(e -> registerUser());
+        card.add(registerButton);
+        card.add(Box.createVerticalStrut(20));
 
-        loginButton = new JButton("Login");
-        loginButton.setBounds(200, 270, 130, 30);
-        add(loginButton);
-
-        registerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                registerUser();
-            }
-        });
-
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Close register form
+        // ==== Login text ====
+        JLabel loginLabel = new JLabel(
+            "<html><div style='text-align:center;color:#ccc;'>Already have an account? <span style='color:#3498DB;text-decoration:underline;'>Login</span></div></html>",
+            SwingConstants.CENTER
+        );
+        loginLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        loginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        loginLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                dispose();
                 new LoginForm().setVisible(true);
             }
+            public void mouseEntered(MouseEvent e) {
+                loginLabel.setText("<html><div style='text-align:center;color:#ccc;'>Already have an account? <span style='color:#2980B9;text-decoration:underline;'>Login</span></div></html>");
+            }
+            public void mouseExited(MouseEvent e) {
+                loginLabel.setText("<html><div style='text-align:center;color:#ccc;'>Already have an account? <span style='color:#3498DB;text-decoration:underline;'>Login</span></div></html>");
+            }
         });
+        card.add(loginLabel);
+
+        background.add(card);
+    }
+
+    // ===== Helper methods =====
+
+    private JPanel wrapLeftAligned(JComponent comp) {
+        JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        wrapper.setOpaque(false);
+        wrapper.add(comp);
+        return wrapper;
+    }
+
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        label.setForeground(Color.LIGHT_GRAY);
+        return label;
+    }
+
+    private JTextField createTextField() {
+        JTextField field = new JTextField();
+        styleField(field);
+        return field;
+    }
+
+    private void styleField(JTextField field) {
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        field.setBackground(new Color(60, 60, 60));
+        field.setForeground(Color.WHITE);
+        field.setCaretColor(Color.WHITE);
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(90, 90, 90)),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+    }
+
+    private void styleComboBox(JComboBox<String> combo) {
+        combo.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        combo.setBackground(new Color(60, 60, 60));
+        combo.setForeground(Color.WHITE);
+        combo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        combo.setFocusable(false);
+        combo.setBorder(BorderFactory.createLineBorder(new Color(90, 90, 90)));
+    }
+
+    private JButton createButton(String text, Color bg) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btn.setBackground(bg);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { btn.setBackground(bg.darker()); }
+            public void mouseExited(MouseEvent e) { btn.setBackground(bg); }
+        });
+        return btn;
     }
 
     private void registerUser() {
@@ -94,13 +176,13 @@ public class RegisterForm extends JFrame {
         String result = userService.registerUser(user);
         JOptionPane.showMessageDialog(this, result);
 
-        if(result.equals("User registered successfully.")) {
+        if (result.equals("User registered successfully.")) {
             dispose();
             new LoginForm().setVisible(true);
         }
     }
 
     public static void main(String[] args) {
-        new RegisterForm().setVisible(true);
+        SwingUtilities.invokeLater(() -> new RegisterForm().setVisible(true));
     }
 }

@@ -1,6 +1,9 @@
 package main;
 
 import javax.swing.SwingUtilities;
+
+import com.formdev.flatlaf.FlatDarculaLaf;
+
 import ui.auth.LoginForm;
 import utils.DBConnection;
 import java.sql.Connection;
@@ -25,9 +28,7 @@ public class SkillSphereApp {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Set system look and feel
-                javax.swing.UIManager.setLookAndFeel(
-                    javax.swing.UIManager.getSystemLookAndFeelClassName()
-                );
+                javax.swing.UIManager.setLookAndFeel(new FlatDarculaLaf());
             } catch (Exception e) {
                 e.printStackTrace();
             }
