@@ -139,18 +139,37 @@ public class LoginForm extends JFrame {
     }
 
     private void loginUser() {
-        String email = emailField.getText().trim().toLowerCase();
-        String password = new String(passwordField.getPassword()).trim();
+    String email = emailField.getText().trim().toLowerCase();
+    String password = new String(passwordField.getPassword()).trim();
 
-        User user = userService.loginUser(email, password);
-        if (user != null) {
-            JOptionPane.showMessageDialog(this, "Login successful! Welcome " + user.getName());
-            dispose();
-            // new DashboardForm(user).setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid email or password.");
+    User user = userService.loginUser(email, password);
+
+    if (user != null) {
+        JOptionPane.showMessageDialog(this, "Login successful! Welcome " + user.getName());
+        dispose();
+
+        // Render dashboard based on user role
+        switch (user.getRoleId()) {
+            case 1: // Learner
+                new ui.dashboard.LearnerDashboard(user.getName()).setVisible(true);
+                break;
+            // case 2: // Mentor
+            //     new ui.dashboard.mentor.MentorDashboard(user.getName()).setVisible(true);
+            //     break;
+            // case 3: // Employer
+            //     new ui.dashboard.employer.EmployerDashboard(user.getName()).setVisible(true);
+            //     break;
+            // case 4: // Admin
+            //     new ui.dashboard.admin.AdminDashboard(user.getName()).setVisible(true);
+            //     break;
+            default:
+                JOptionPane.showMessageDialog(this, "Unknown role. Cannot open dashboard.");
         }
+    } else {
+        JOptionPane.showMessageDialog(this, "Invalid email or password.");
     }
+}
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
